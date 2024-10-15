@@ -51,20 +51,37 @@ public class CategoryController {
 	}
 
 	@GetMapping("/active")
-	public ResponseEntity<?> getActiveCategory() {
+	public ResponseEntity<?> getActiveCategory() 
+	{
 
 		List<CategoryReponse> allCategory = categoryService.getActiveCategory();
-		if (CollectionUtils.isEmpty(allCategory)) {
+		if (CollectionUtils.isEmpty(allCategory)) 
+		{
 			return ResponseEntity.noContent().build();
-		} else {
+		} else 
+		{
 			return new ResponseEntity<>(allCategory, HttpStatus.OK);
 		}
 	}
+	
+	@GetMapping("/inactive")
+	public ResponseEntity<?> getInactiveCategory() {
+
+	    List<CategoryReponse> inactiveCategories = categoryService.getInactiveCategory();
+	    if (CollectionUtils.isEmpty(inactiveCategories)) {
+	        return ResponseEntity.noContent().build();
+	    } else {
+	        return new ResponseEntity<>(inactiveCategories, HttpStatus.OK);
+	    }
+	}
+	
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getCategortDetailsById(@PathVariable Integer id) {
+	public ResponseEntity<?> getCategortDetailsById(@PathVariable Integer id) 
+	{
 		CategoryDto categoryDto = categoryService.getCategoryById(id);
-		if (ObjectUtils.isEmpty(categoryDto)) {
+		if (ObjectUtils.isEmpty(categoryDto)) 
+		{
 			return new ResponseEntity<>("Category not found with Id=" + id, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(categoryDto, HttpStatus.OK);

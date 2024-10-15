@@ -61,6 +61,8 @@ public class CategoryServiceImpl implements CategoryService {
 				.toList();
 		return categoryList;
 	}
+	
+	
 
 	@Override
 	public CategoryDto getCategoryById(Integer id) {
@@ -87,4 +89,14 @@ public class CategoryServiceImpl implements CategoryService {
 		return false;
 	}
 
+	@Override
+	public List<CategoryReponse> getInactiveCategory() {
+
+	    List<Category> categories = categoryRepo.findByIsActiveFalseAndIsDeletedFalse();
+	    List<CategoryReponse> categoryList = categories.stream().map(cat -> mapper.map(cat, CategoryReponse.class))
+	            .toList();
+	    return categoryList;
+	}
+
+	
 }

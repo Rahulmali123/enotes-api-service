@@ -16,5 +16,7 @@ public interface CategoryService {
 	public CategoryDto getCategoryById(Integer id);
 
 	public Boolean deleteCategory(Integer id);
+	
+	public List<CategoryReponse> getInactiveCategory();
 
 }
