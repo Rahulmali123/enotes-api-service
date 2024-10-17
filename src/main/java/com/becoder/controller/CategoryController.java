@@ -37,6 +37,8 @@ public class CategoryController {
 			return new ResponseEntity<>("not saved", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
 
 	@GetMapping("/")
 	public ResponseEntity<?> getAllCategory() {
@@ -75,16 +77,15 @@ public class CategoryController {
 	    }
 	}
 	
-
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getCategortDetailsById(@PathVariable Integer id) 
-	{
+	public ResponseEntity<?> getCategortDetailsById(@PathVariable Integer id) throws Exception {
+
 		CategoryDto categoryDto = categoryService.getCategoryById(id);
-		if (ObjectUtils.isEmpty(categoryDto)) 
-		{
-			return new ResponseEntity<>("Category not found with Id=" + id, HttpStatus.NOT_FOUND);
+		if (ObjectUtils.isEmpty(categoryDto)) {
+			return new ResponseEntity<>("Internal Server Error", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(categoryDto, HttpStatus.OK);
+
 	}
 
 	@DeleteMapping("/{id}")

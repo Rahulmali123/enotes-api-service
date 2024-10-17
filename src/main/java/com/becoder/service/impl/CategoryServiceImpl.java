@@ -12,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 import com.becoder.dto.CategoryDto;
 import com.becoder.dto.CategoryReponse;
 import com.becoder.entity.Category;
+import com.becoder.exception.ResourceNotFoundException;
 import com.becoder.repository.CategoryRepository;
 import com.becoder.service.CategoryService;
 
@@ -34,14 +35,37 @@ public class CategoryServiceImpl implements CategoryService {
 
 		Category category = mapper.map(categoryDto, Category.class);
 
-		category.setIsDeleted(false);
-		category.setCreatedBy(1);
-		category.setCreatedOn(new Date());
+		if (ObjectUtils.isEmpty(category.getId())) 
+		{
+			category.setIsDeleted(false);
+			category.setCreatedBy(1);
+			category.setCreatedOn(new Date());
+		} else {
+			updateCategory(category);
+		}
+
 		Category saveCategory = categoryRepo.save(category);
-		if (ObjectUtils.isEmpty(saveCategory)) {
+		if (ObjectUtils.isEmpty(saveCategory)) 
+		{
 			return false;
 		}
 		return true;
+	}
+	
+	private void updateCategory(Category category) {
+		Optional<Category> findById = categoryRepo.findById(category.getId());
+		
+		if (findById.isPresent()) 
+		{
+			Category existCategory = findById.get();
+			category.setIsDeleted(existCategory.getIsDeleted());
+			category.setCreatedBy(existCategory.getCreatedBy());
+			category.setCreatedOn(existCategory.getCreatedOn());
+			
+			
+			category.setUpdatedBy(1);
+			category.setUpdatedOn(new Date());
+		}
 	}
 
 	@Override
@@ -64,13 +88,26 @@ public class CategoryServiceImpl implements CategoryService {
 	
 	
 
+//	@Override
+//	public CategoryDto getCategoryById(Integer id) {
+//
+//		Optional<Category> findByCatgeory = categoryRepo.findByIdAndIsDeletedFalse(id);
+//
+//		if (findByCatgeory.isPresent()) {
+//			Category category = findByCatgeory.get();
+//			return mapper.map(category, CategoryDto.class);
+//		}
+//		return null;
+//	}
+	
 	@Override
-	public CategoryDto getCategoryById(Integer id) {
+	public CategoryDto getCategoryById(Integer id) throws Exception {
 
-		Optional<Category> findByCatgeory = categoryRepo.findByIdAndIsDeletedFalse(id);
+		Category category = categoryRepo.findByIdAndIsDeletedFalse(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found with id=" + id));
 
-		if (findByCatgeory.isPresent()) {
-			Category category = findByCatgeory.get();
+		if (!ObjectUtils.isEmpty(category)) {
+			category.getName().toUpperCase();
 			return mapper.map(category, CategoryDto.class);
 		}
 		return null;
@@ -88,6 +125,8 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 		return false;
 	}
+	
+	
 
 	@Override
 	public List<CategoryReponse> getInactiveCategory() {
