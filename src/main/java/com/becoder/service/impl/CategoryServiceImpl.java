@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import com.becoder.dto.CategoryDto;
-import com.becoder.dto.CategoryReponse;
+import com.becoder.dto.CategoryResponse;
 import com.becoder.entity.Category;
 import com.becoder.exception.ResourceNotFoundException;
 import com.becoder.repository.CategoryRepository;
 import com.becoder.service.CategoryService;
+import com.becoder.util.Validation;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -24,49 +25,46 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	private ModelMapper mapper;
+	
+	@Autowired
+	private Validation validation;
 
 	@Override
 	public Boolean saveCategory(CategoryDto categoryDto) {
 
-//		Category category = new Category();
-//		category.setName(categoryDto.getName());
-//		category.setDescription(categoryDto.getDescription());
-//		category.setIsActive(categoryDto.getIsActive());
+		// Validation Checking
+		validation.categoryValidation(categoryDto);
 
 		Category category = mapper.map(categoryDto, Category.class);
 
-		if (ObjectUtils.isEmpty(category.getId())) 
-		{
+		if (ObjectUtils.isEmpty(category.getId())) {
 			category.setIsDeleted(false);
-			category.setCreatedBy(1);
+//			category.setCreatedBy(1);
 			category.setCreatedOn(new Date());
 		} else {
 			updateCategory(category);
 		}
 
 		Category saveCategory = categoryRepo.save(category);
-		if (ObjectUtils.isEmpty(saveCategory)) 
-		{
+		if (ObjectUtils.isEmpty(saveCategory)) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	private void updateCategory(Category category) {
 		Optional<Category> findById = categoryRepo.findById(category.getId());
-		
-		if (findById.isPresent()) 
-		{
+		if (findById.isPresent()) {
 			Category existCategory = findById.get();
-			category.setIsDeleted(existCategory.getIsDeleted());
 			category.setCreatedBy(existCategory.getCreatedBy());
 			category.setCreatedOn(existCategory.getCreatedOn());
-			
-			
-			category.setUpdatedBy(1);
-			category.setUpdatedOn(new Date());
+			category.setIsDeleted(existCategory.getIsDeleted());
+
+//			category.setUpdatedBy(1);
+//			category.setUpdatedOn(new Date());
 		}
 	}
+
 
 	@Override
 	public List<CategoryDto> getAllCategory() {
@@ -77,11 +75,12 @@ public class CategoryServiceImpl implements CategoryService {
 		return categoryDtoList;
 	}
 
+
 	@Override
-	public List<CategoryReponse> getActiveCategory() {
+	public List<CategoryResponse> getActiveCategory() {
 
 		List<Category> categories = categoryRepo.findByIsActiveTrueAndIsDeletedFalse();
-		List<CategoryReponse> categoryList = categories.stream().map(cat -> mapper.map(cat, CategoryReponse.class))
+		List<CategoryResponse> categoryList = categories.stream().map(cat -> mapper.map(cat, CategoryResponse.class))
 				.toList();
 		return categoryList;
 	}
@@ -129,10 +128,10 @@ public class CategoryServiceImpl implements CategoryService {
 	
 
 	@Override
-	public List<CategoryReponse> getInactiveCategory() {
+	public List<CategoryResponse> getInactiveCategory() {
 
 	    List<Category> categories = categoryRepo.findByIsActiveFalseAndIsDeletedFalse();
-	    List<CategoryReponse> categoryList = categories.stream().map(cat -> mapper.map(cat, CategoryReponse.class))
+	    List<CategoryResponse> categoryList = categories.stream().map(cat -> mapper.map(cat, CategoryResponse.class))
 	            .toList();
 	    return categoryList;
 	}
