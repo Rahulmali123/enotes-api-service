@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.becoder.dto.CategoryDto;
-import com.becoder.dto.CategoryReponse;
+import com.becoder.dto.CategoryResponse;
 import com.becoder.service.CategoryService;
 
 @RestController
@@ -37,12 +37,11 @@ public class CategoryController {
 			return new ResponseEntity<>("not saved", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	
 
 	@GetMapping("/")
 	public ResponseEntity<?> getAllCategory() {
-
+//		String nm=null;
+//		nm.toUpperCase();
 		List<CategoryDto> allCategory = categoryService.getAllCategory();
 		if (CollectionUtils.isEmpty(allCategory)) {
 			return ResponseEntity.noContent().build();
@@ -53,23 +52,20 @@ public class CategoryController {
 	}
 
 	@GetMapping("/active")
-	public ResponseEntity<?> getActiveCategory() 
-	{
+	public ResponseEntity<?> getActiveCategory() {
 
-		List<CategoryReponse> allCategory = categoryService.getActiveCategory();
-		if (CollectionUtils.isEmpty(allCategory)) 
-		{
+		List<CategoryResponse> allCategory = categoryService.getActiveCategory();
+		if (CollectionUtils.isEmpty(allCategory)) {
 			return ResponseEntity.noContent().build();
-		} else 
-		{
+		} else {
 			return new ResponseEntity<>(allCategory, HttpStatus.OK);
 		}
 	}
-	
+
 	@GetMapping("/inactive")
 	public ResponseEntity<?> getInactiveCategory() {
 
-	    List<CategoryReponse> inactiveCategories = categoryService.getInactiveCategory();
+	    List<CategoryResponse> inactiveCategories = categoryService.getInactiveCategory();
 	    if (CollectionUtils.isEmpty(inactiveCategories)) {
 	        return ResponseEntity.noContent().build();
 	    } else {

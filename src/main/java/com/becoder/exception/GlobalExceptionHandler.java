@@ -10,28 +10,29 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
-public class GlobalExceptionHandler 
-{
+public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<?> handleException(Exception e) 
-	{
+	public ResponseEntity<?> handleException(Exception e) {
 		log.error("GlobalExceptionHandler :: handleException ::", e.getMessage());
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(NullPointerException.class)
-	public ResponseEntity<?> handleNullPointerException(Exception e) 
-	{
+	public ResponseEntity<?> handleNullPointerException(Exception e) {
 		log.error("GlobalExceptionHandler :: handleNullPointerException ::", e.getMessage());
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<?> handleResourceNotFoundException(Exception e) 
-	{
+	public ResponseEntity<?> handleResourceNotFoundException(Exception e) {
 		log.error("GlobalExceptionHandler :: handleResourceNotFoundException ::", e.getMessage());
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<?> handleValidationException(ValidationException e) {
+		return new ResponseEntity<>(e.getErrors(), HttpStatus.BAD_REQUEST);
 	}
 
 }
